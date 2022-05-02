@@ -32,6 +32,7 @@ class BinarySearchTree {
 
   has(data) {
     let curr = this.tree;
+    if (!curr) return false;
     while (true) {
       if (data == curr.data) return true;
       let d = data > curr.data ? 'right' : 'left';
@@ -59,19 +60,23 @@ class BinarySearchTree {
   remove(data) {
     let curr = this.tree;
     if (data == curr.data) {
-      this.tree = null;
+      this.tree = this.removeRoot(curr);
       return;
     }
     let d = data > curr.data ? 'right' : 'left';
     let next = curr[d];
-    while (next) {
+    while (true) {
       if (data == next.data) {
-        curr[d] = null;
+        curr[d] = this.removeRoot(next);
         return;
       }
-      d = data > curr.data ? 'right' : 'left';
-      curr = next;
-      next = curr[d];
+      d = data > next.data ? 'right' : 'left';
+      if (next[d]) {
+        curr = next;
+        next = next[d];
+      } else {
+        return null;
+      }
     }
   }
 
@@ -89,6 +94,30 @@ class BinarySearchTree {
       curr = curr.right;
     }
     return curr.data;
+  }
+
+  removeRoot(tree) {
+    if (tree.left == null) return tree.right;
+    if (tree.right == null) return tree.left;
+    let curr = tree.right;
+    let d = 'right';
+    let prev = tree;
+    while (curr.left) {
+      d = 'left';
+      prev = curr;
+      curr = curr.left;
+    }
+    if (!curr.right) {
+      prev[d] = null;
+      curr.left = tree.left;
+      curr.right = tree.right;
+      return curr;
+    } else {
+      prev[d] = curr.right;
+      curr.left = tree.left;
+      curr.right = tree.right;
+      return curr;
+    }
   }
 }
 
